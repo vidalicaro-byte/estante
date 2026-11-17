@@ -54,3 +54,9 @@ export class ValidationError extends OpenLibraryError {
     super(`Unexpected response shape from ${url}`, options);
   }
 }
+
+export class InvalidIdError extends OpenLibraryError {
+  constructor(id: string) {
+    super(`Invalid Open Library id: ${id}`);
+  }
+}
