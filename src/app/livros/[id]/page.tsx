@@ -49,7 +49,16 @@ async function AuthorLine({ authorIds }: { authorIds: string[] }) {
   if (authors.length === 0) return null;
 
   return (
-    <p className="text-lg text-stone-600">{authors.map((author) => author.name).join(", ")}</p>
+    <p className="text-lg text-stone-600">
+      {authors.map((author, index) => (
+        <span key={author.id}>
+          {index > 0 && ", "}
+          <Link href={`/autores/${author.id}`} className="hover:text-stone-900 hover:underline">
+            {author.name}
+          </Link>
+        </span>
+      ))}
+    </p>
   );
 }
 
