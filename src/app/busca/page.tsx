@@ -6,6 +6,7 @@ import { Pagination } from "@/components/pagination";
 import { SearchForm } from "@/components/search-form";
 import { searchCatalog } from "@/lib/catalog";
 import { parsePage } from "@/lib/pagination";
+import { toCardBook } from "@/lib/card-book";
 
 export const metadata: Metadata = { title: "Busca" };
 
@@ -64,7 +65,7 @@ async function Results({ query, page }: { query: string; page: number }) {
       <p aria-live="polite" className="text-sm text-stone-600">
         {result.total.toLocaleString("pt-BR")} resultados para “{query}”
       </p>
-      <BookGrid books={result.books} eagerCount={5} />
+      <BookGrid books={result.books.map(toCardBook)} eagerCount={5} />
       <Pagination query={query} page={result.page} totalPages={Math.min(result.totalPages, 50)} />
     </>
   );

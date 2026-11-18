@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { coverUrl, type BookSummary } from "@/lib/open-library";
+import type { CardBook } from "@/lib/card-book";
+import { coverUrl } from "@/lib/open-library";
+import { FavoriteButton } from "./favorite-button";
 
-export function BookCard({ book, eager = false }: { book: BookSummary; eager?: boolean }) {
-  const authors = book.authors.map((author) => author.name).join(", ");
-
+export function BookCard({ book, eager = false }: { book: CardBook; eager?: boolean }) {
   return (
     <article className="group relative flex flex-col gap-3">
       <div className="relative aspect-[2/3] overflow-hidden rounded-md bg-stone-200 shadow-sm">
@@ -25,6 +25,9 @@ export function BookCard({ book, eager = false }: { book: BookSummary; eager?: b
             Sem capa
           </div>
         )}
+        <div className="absolute top-2 right-2 z-10">
+          <FavoriteButton book={book} />
+        </div>
       </div>
       <div>
         <h3 className="leading-snug font-semibold text-stone-900">
@@ -35,7 +38,7 @@ export function BookCard({ book, eager = false }: { book: BookSummary; eager?: b
             {book.title}
           </Link>
         </h3>
-        {authors && <p className="text-sm text-stone-600">{authors}</p>}
+        {book.authors && <p className="text-sm text-stone-600">{book.authors}</p>}
         {book.firstPublishYear && <p className="text-sm text-stone-500">{book.firstPublishYear}</p>}
       </div>
     </article>

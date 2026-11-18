@@ -1,11 +1,11 @@
-import type { BookSummary } from "@/lib/open-library";
+import type { CardBook } from "@/lib/card-book";
 import { BookCard } from "./book-card";
 
 export function BookGrid({
   books,
   eagerCount = 0,
 }: {
-  books: BookSummary[];
+  books: CardBook[];
   /** How many of the first covers are above the fold and should load eagerly. */
   eagerCount?: number;
 }) {
