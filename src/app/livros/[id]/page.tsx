@@ -51,11 +51,11 @@ async function AuthorLine({ authorIds }: { authorIds: string[] }) {
   if (authors.length === 0) return null;
 
   return (
-    <p className="text-lg text-stone-600">
+    <p className="text-muted text-lg">
       {authors.map((author, index) => (
         <span key={author.id}>
           {index > 0 && ", "}
-          <Link href={`/autores/${author.id}`} className="hover:text-stone-900 hover:underline">
+          <Link href={`/autores/${author.id}`} className="hover:text-ink hover:underline">
             {author.name}
           </Link>
         </span>
@@ -94,12 +94,12 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
         <BookStructuredData work={work} />
       </Suspense>
 
-      <Link href="/busca" className="text-sm text-stone-600 hover:text-stone-900 hover:underline">
+      <Link href="/busca" className="text-muted hover:text-ink text-sm hover:underline">
         ← Voltar à busca
       </Link>
 
       <div className="flex flex-col gap-8 sm:flex-row">
-        <div className="relative aspect-[2/3] w-48 shrink-0 self-start overflow-hidden rounded-md bg-stone-200 shadow-md sm:w-64">
+        <div className="bg-line relative aspect-[2/3] w-48 shrink-0 self-start overflow-hidden rounded-md shadow-md sm:w-64">
           {cover !== undefined ? (
             <Image
               src={coverUrl(cover, "L")}
@@ -110,10 +110,7 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
               className="object-cover"
             />
           ) : (
-            <div
-              aria-hidden
-              className="flex h-full items-center justify-center text-sm text-stone-500"
-            >
+            <div aria-hidden className="text-muted flex h-full items-center justify-center text-sm">
               Sem capa
             </div>
           )}
@@ -123,41 +120,36 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
           <header className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight">{work.title}</h1>
             <Suspense
-              fallback={<div aria-hidden className="h-7 w-40 animate-pulse rounded bg-stone-200" />}
+              fallback={<div aria-hidden className="bg-line h-7 w-40 animate-pulse rounded" />}
             >
               <AuthorLine authorIds={work.authorIds} />
             </Suspense>
           </header>
 
           <Suspense
-            fallback={
-              <div aria-hidden className="h-10 w-32 animate-pulse rounded-md bg-stone-200" />
-            }
+            fallback={<div aria-hidden className="bg-line h-10 w-32 animate-pulse rounded-md" />}
           >
             <FavoriteAction work={work} />
           </Suspense>
 
           {work.description.length > 0 ? (
-            <div className="max-w-prose space-y-3 text-stone-700">
+            <div className="text-ink/80 max-w-prose space-y-3">
               {work.description.map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}
             </div>
           ) : (
-            <p className="text-stone-500">Este livro ainda não tem descrição.</p>
+            <p className="text-muted">Este livro ainda não tem descrição.</p>
           )}
 
           {work.subjects.length > 0 && (
             <section aria-labelledby="assuntos" className="space-y-2">
-              <h2 id="assuntos" className="text-sm font-semibold text-stone-500 uppercase">
+              <h2 id="assuntos" className="text-muted text-sm font-semibold uppercase">
                 Assuntos
               </h2>
               <ul className="flex flex-wrap gap-2">
                 {work.subjects.slice(0, 10).map((subject) => (
-                  <li
-                    key={subject}
-                    className="rounded-full bg-stone-200 px-3 py-1 text-sm text-stone-700"
-                  >
+                  <li key={subject} className="bg-line text-ink/80 rounded-full px-3 py-1 text-sm">
                     {subject}
                   </li>
                 ))}
@@ -167,7 +159,7 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
 
           {work.links.length > 0 && (
             <section aria-labelledby="links" className="space-y-2">
-              <h2 id="links" className="text-sm font-semibold text-stone-500 uppercase">
+              <h2 id="links" className="text-muted text-sm font-semibold uppercase">
                 Links externos
               </h2>
               <ul className="space-y-1">
@@ -177,7 +169,7 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-amber-800 underline"
+                      className="text-accent underline"
                     >
                       {link.title}
                       <span className="sr-only"> (abre em nova aba)</span>
@@ -196,11 +188,11 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
 function BookSkeleton() {
   return (
     <div aria-hidden className="flex flex-col gap-8 sm:flex-row">
-      <div className="aspect-[2/3] w-48 animate-pulse rounded-md bg-stone-200 sm:w-64" />
+      <div className="bg-line aspect-[2/3] w-48 animate-pulse rounded-md sm:w-64" />
       <div className="flex-1 space-y-4">
-        <div className="h-9 w-2/3 animate-pulse rounded bg-stone-200" />
-        <div className="h-5 w-1/3 animate-pulse rounded bg-stone-200" />
-        <div className="h-24 w-full max-w-prose animate-pulse rounded bg-stone-200" />
+        <div className="bg-line h-9 w-2/3 animate-pulse rounded" />
+        <div className="bg-line h-5 w-1/3 animate-pulse rounded" />
+        <div className="bg-line h-24 w-full max-w-prose animate-pulse rounded" />
       </div>
     </div>
   );

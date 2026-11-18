@@ -13,7 +13,9 @@ const USER_AGENT =
   "Estante/0.1 (https://github.com/vidalicaro-byte/estante; vidalicaro@hotmail.com)";
 const DEFAULT_TIMEOUT_MS = 8_000;
 const DEFAULT_RETRY_DELAY_MS = 300;
-const MAX_RETRIES = 2;
+/** The production build hits the API from several workers at once, so it retries harder. */
+const IS_BUILD = process.env.NEXT_PHASE === "phase-production-build";
+const MAX_RETRIES = IS_BUILD ? 5 : 2;
 
 export type SearchParams = Record<string, string | number | undefined>;
 
