@@ -73,3 +73,24 @@ export async function getFeaturedWorkIds(): Promise<string[]> {
     return FALLBACK_WORK_IDS;
   }
 }
+
+const FALLBACK_AUTHOR_IDS = ["OL93286A"]; // Machado de Assis
+
+/** Authors prerendered at build time: the lead author of the top books on each home shelf. */
+export async function getFeaturedAuthorIds(): Promise<string[]> {
+  "use cache";
+  cacheLife("days");
+
+  try {
+    const results = await Promise.all(SHELVES.map((shelf) => searchCatalog(shelf.query, 1, 3)));
+    const ids = results.flatMap((result) =>
+      result.books.flatMap((book) => {
+        const id = book.authors[0]?.id;
+        return id ? [id] : [];
+      }),
+    );
+    return ids.length > 0 ? [...new Set(ids)] : FALLBACK_AUTHOR_IDS;
+  } catch {
+    return FALLBACK_AUTHOR_IDS;
+  }
+}

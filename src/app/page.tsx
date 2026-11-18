@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { BookShelf, BookShelfSkeleton } from "@/components/book-shelf";
 import { SearchForm } from "@/components/search-form";
 import { SHELVES } from "@/lib/shelves";
+import Link from "next/link";
+import { GENRES } from "@/lib/genres";
 
 export default function HomePage() {
   return (
@@ -13,6 +15,22 @@ export default function HomePage() {
         </p>
         <SearchForm />
       </section>
+
+      <nav aria-label="Gêneros">
+        <h2 className="mb-3 text-sm font-semibold text-stone-500 uppercase">Explorar por gênero</h2>
+        <ul className="flex flex-wrap gap-2">
+          {GENRES.map((genre) => (
+            <li key={genre.slug}>
+              <Link
+                href={`/generos/${genre.slug}`}
+                className="rounded-full border border-stone-300 bg-white px-4 py-1.5 text-sm text-stone-700 hover:border-stone-500 hover:text-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
+              >
+                {genre.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       {SHELVES.map((shelf, index) => (
         <section key={shelf.title} aria-labelledby={`shelf-${shelf.title}`} className="space-y-4">
