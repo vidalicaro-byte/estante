@@ -8,6 +8,8 @@ import { bookJsonLd } from "@/lib/book-json-ld";
 import { getBookWork, getFeaturedWorkIds, loadAuthors } from "@/lib/catalog";
 import { coverUrl, type Work } from "@/lib/open-library";
 import { truncate } from "@/lib/text";
+import { FavoriteButton } from "@/components/favorite-button";
+import type { CardBook } from "@/lib/card-book";
 
 export async function generateStaticParams() {
   const ids = await getFeaturedWorkIds();
@@ -67,6 +69,18 @@ async function BookStructuredData({ work }: { work: Work }) {
   return <JsonLd data={bookJsonLd(work, authors)} />;
 }
 
+async function FavoriteAction({ work }: { work: Work }) {
+  const authors = await loadAuthors(work.authorIds);
+  const book: CardBook = {
+    id: work.id,
+    title: work.title,
+    authors: authors.map((author) => author.name).join(", "),
+    coverId: work.coverIds[0],
+  };
+
+  return <FavoriteButton book={book} variant="full" />;
+}
+
 async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">) {
   const { id } = await params;
   const work = await getBookWork(id);
@@ -114,6 +128,14 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
               <AuthorLine authorIds={work.authorIds} />
             </Suspense>
           </header>
+
+          <Suspense
+            fallback={
+              <div aria-hidden className="h-10 w-32 animate-pulse rounded-md bg-stone-200" />
+            }
+          >
+            <FavoriteAction work={work} />
+          </Suspense>
 
           {work.description.length > 0 ? (
             <div className="max-w-prose space-y-3 text-stone-700">

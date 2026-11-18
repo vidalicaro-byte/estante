@@ -1,5 +1,6 @@
 import { searchCatalog } from "@/lib/catalog";
 import { BookGrid } from "./book-grid";
+import { toCardBook } from "@/lib/card-book";
 
 async function loadBooks(query: string, limit: number) {
   try {
@@ -29,7 +30,7 @@ export async function BookShelf({
     );
   }
 
-  return <BookGrid books={books} eagerCount={eager ? 5 : 0} />;
+  return <BookGrid books={books.map(toCardBook)} eagerCount={eager ? 5 : 0} />;
 }
 
 export function BookShelfSkeleton() {

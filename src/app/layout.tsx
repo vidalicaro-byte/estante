@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "Estante", template: "%s · Estante" },
   description: "Catálogo de livros com destaque para a literatura brasileira.",
+  openGraph: { siteName: "Estante", locale: "pt_BR", type: "website" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

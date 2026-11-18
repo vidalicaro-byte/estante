@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FavoritesLink } from "./favorites-link";
 
 export function SiteHeader() {
   return (
@@ -7,10 +8,11 @@ export function SiteHeader() {
         <Link href="/" className="text-xl font-bold tracking-tight text-stone-900">
           Estante
         </Link>
-        <nav aria-label="Principal">
+        <nav aria-label="Principal" className="flex items-center gap-5">
           <Link href="/busca" className="text-stone-700 hover:text-stone-900 hover:underline">
             Buscar
           </Link>
+          <FavoritesLink />
         </nav>
       </div>
     </header>
