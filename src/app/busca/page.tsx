@@ -36,7 +36,7 @@ async function SearchResults({ searchParams }: Pick<PageProps<"/busca">, "search
       <h1 className="text-2xl font-bold tracking-tight">Busca</h1>
       <SearchForm defaultValue={query} />
       {query === "" ? (
-        <p className="text-stone-600">Digite um título, autor ou assunto para começar.</p>
+        <p className="text-muted">Digite um título, autor ou assunto para começar.</p>
       ) : (
         <Results query={query} page={page} />
       )}
@@ -50,19 +50,19 @@ async function Results({ query, page }: { query: string; page: number }) {
     result = await searchCatalog(query, page);
   } catch {
     return (
-      <p role="alert" className="rounded-md bg-amber-50 p-4 text-amber-900">
+      <p role="alert" className="bg-accent/10 text-ink rounded-md p-4">
         A busca está indisponível no momento. Tente novamente em instantes.
       </p>
     );
   }
 
   if (result.books.length === 0) {
-    return <p className="text-stone-600">Nenhum resultado para “{query}”.</p>;
+    return <p className="text-muted">Nenhum resultado para “{query}”.</p>;
   }
 
   return (
     <>
-      <p aria-live="polite" className="text-sm text-stone-600">
+      <p aria-live="polite" className="text-muted text-sm">
         {result.total.toLocaleString("pt-BR")} resultados para “{query}”
       </p>
       <BookGrid books={result.books.map(toCardBook)} eagerCount={5} />

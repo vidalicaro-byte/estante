@@ -58,20 +58,18 @@ export async function loadAuthors(ids: string[]): Promise<Author[]> {
 
 const FALLBACK_WORK_IDS = ["OL1003040W"]; // Dom Casmurro
 
-/** Works prerendered at build time: the top results of each home shelf. */
+/**
+ * Works prerendered at build time: the top results of each home shelf.
+ * No try/catch on purpose: if the API is down, failing loudly beats
+ * prerendering (and caching) an almost empty site.
+ */
 export async function getFeaturedWorkIds(): Promise<string[]> {
   "use cache";
   cacheLife("days");
 
-  try {
-    const results = await Promise.all(
-      SHELVES.map((shelf) => searchBooks(shelf.query, { limit: 3 })),
-    );
-    const ids = [...new Set(results.flatMap((result) => result.books.map((book) => book.id)))];
-    return ids.length > 0 ? ids : FALLBACK_WORK_IDS;
-  } catch {
-    return FALLBACK_WORK_IDS;
-  }
+  const results = await Promise.all(SHELVES.map((shelf) => searchBooks(shelf.query, { limit: 3 })));
+  const ids = [...new Set(results.flatMap((result) => result.books.map((book) => book.id)))];
+  return ids.length > 0 ? ids : FALLBACK_WORK_IDS;
 }
 
 const FALLBACK_AUTHOR_IDS = ["OL93286A"]; // Machado de Assis
@@ -81,16 +79,12 @@ export async function getFeaturedAuthorIds(): Promise<string[]> {
   "use cache";
   cacheLife("days");
 
-  try {
-    const results = await Promise.all(SHELVES.map((shelf) => searchCatalog(shelf.query, 1, 3)));
-    const ids = results.flatMap((result) =>
-      result.books.flatMap((book) => {
-        const id = book.authors[0]?.id;
-        return id ? [id] : [];
-      }),
-    );
-    return ids.length > 0 ? [...new Set(ids)] : FALLBACK_AUTHOR_IDS;
-  } catch {
-    return FALLBACK_AUTHOR_IDS;
-  }
+  const results = await Promise.all(SHELVES.map((shelf) => searchCatalog(shelf.query, 1, 3)));
+  const ids = results.flatMap((result) =>
+    result.books.flatMap((book) => {
+      const id = book.authors[0]?.id;
+      return id ? [id] : [];
+    }),
+  );
+  return ids.length > 0 ? [...new Set(ids)] : FALLBACK_AUTHOR_IDS;
 }

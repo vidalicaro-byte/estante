@@ -10,7 +10,7 @@ export default function FavoritesPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold tracking-tight">Favoritos</h1>
-      <p className="text-stone-600">Seus livros salvos ficam guardados neste navegador.</p>
+      <p className="text-muted">Seus livros salvos ficam guardados neste navegador.</p>
       <FavoritesList />
     </div>
   );

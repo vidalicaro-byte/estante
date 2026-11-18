@@ -32,9 +32,9 @@ export function FavoriteButton({
   variant?: "icon" | "full";
 }) {
   const active = isFavorite(useFavorites(), book.id);
-  const color = active ? "text-rose-600" : "text-stone-700";
+  const color = active ? "text-accent" : "text-ink/80";
   const focus =
-    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700";
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
   // The name stays constant; aria-pressed conveys the on/off state.
   if (variant === "full") {
@@ -43,7 +43,7 @@ export function FavoriteButton({
         type="button"
         aria-pressed={active}
         onClick={() => toggleStoredFavorite(book)}
-        className={`inline-flex items-center gap-2 rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-medium hover:bg-stone-100 ${color} ${focus}`}
+        className={`border-line bg-surface hover:bg-line/50 inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium ${color} ${focus}`}
       >
         <HeartIcon filled={active} />
         Favoritar
@@ -57,7 +57,7 @@ export function FavoriteButton({
       aria-pressed={active}
       aria-label={`Favoritar ${book.title}`}
       onClick={() => toggleStoredFavorite(book)}
-      className={`rounded-full bg-white/90 p-2 shadow-sm hover:bg-white ${color} ${focus}`}
+      className={`bg-surface/90 hover:bg-surface rounded-full p-2 shadow-sm ${color} ${focus}`}
     >
       <HeartIcon filled={active} />
     </button>

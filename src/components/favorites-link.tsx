@@ -7,14 +7,11 @@ export function FavoritesLink() {
   const count = useFavorites().length;
 
   return (
-    <Link href="/favoritos" className="text-stone-700 hover:text-stone-900 hover:underline">
+    <Link href="/favoritos" className="text-ink/80 hover:text-ink hover:underline">
       Favoritos
       {count > 0 && (
         <>
-          <span
-            aria-hidden
-            className="ml-1.5 rounded-full bg-stone-900 px-2 py-0.5 text-xs text-white"
-          >
+          <span aria-hidden className="bg-ink text-paper ml-1.5 rounded-full px-2 py-0.5 text-xs">
             {count}
           </span>
           <span className="sr-only"> ({count})</span>

@@ -1,6 +1,10 @@
 export function SearchForm({ defaultValue = "" }: { defaultValue?: string }) {
   return (
-    <form action="/busca" role="search" className="flex gap-2">
+    <form
+      action="/busca"
+      role="search"
+      className="border-line bg-surface focus-within:border-accent focus-within:ring-accent/25 flex w-full max-w-xl items-center gap-2 rounded-full border p-1.5 shadow-sm transition focus-within:ring-2"
+    >
       <label htmlFor="q" className="sr-only">
         Buscar livros, autores ou assuntos
       </label>
@@ -10,11 +14,11 @@ export function SearchForm({ defaultValue = "" }: { defaultValue?: string }) {
         type="search"
         defaultValue={defaultValue}
         placeholder="Buscar livros, autores ou assuntos"
-        className="min-w-0 flex-1 rounded-md border border-stone-300 bg-white px-3 py-2 text-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
+        className="text-ink placeholder:text-muted min-w-0 flex-1 bg-transparent px-4 py-2 focus:outline-none"
       />
       <button
         type="submit"
-        className="rounded-md bg-stone-900 px-4 py-2 font-medium text-white hover:bg-stone-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
+        className="bg-ink text-paper hover:bg-ink/80 rounded-full px-5 py-2 text-sm font-medium transition-colors"
       >
         Buscar
       </button>

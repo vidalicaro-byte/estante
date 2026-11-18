@@ -19,7 +19,7 @@ export function Pagination({
   if (totalPages <= 1) return null;
 
   const linkClass =
-    "rounded-md border border-stone-300 px-3 py-1.5 text-sm hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-amber-700";
+    "rounded-md border border-line px-3 py-1.5 text-sm hover:bg-line/50 focus-visible:outline-2 focus-visible:outline-accent";
 
   return (
     <nav aria-label="Paginação" className="mt-10">
@@ -33,7 +33,7 @@ export function Pagination({
         )}
         {pageWindow(page, totalPages).map((item, index) =>
           item === "…" ? (
-            <li key={`gap-${index}`} aria-hidden className="px-1 text-stone-500">
+            <li key={`gap-${index}`} aria-hidden className="text-muted px-1">
               …
             </li>
           ) : (
@@ -41,7 +41,7 @@ export function Pagination({
               <Link
                 href={hrefFor(query, item)}
                 aria-current={item === page ? "page" : undefined}
-                className={`${linkClass} ${item === page ? "bg-stone-900 text-white hover:bg-stone-900" : ""}`}
+                className={`${linkClass} ${item === page ? "bg-ink text-paper hover:bg-ink" : ""}`}
               >
                 {item}
               </Link>
