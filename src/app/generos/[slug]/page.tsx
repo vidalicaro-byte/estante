@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BookShelf, BookShelfSkeleton } from "@/components/book-shelf";
+import { GenreChips } from "@/components/genre-chips";
+import { PageHeader } from "@/components/page-header";
 import { findGenre, GENRES } from "@/lib/genres";
 
 export function generateStaticParams() {
@@ -15,29 +17,39 @@ export async function generateMetadata({
   const genre = findGenre(slug);
   if (!genre) return { title: "Gênero não encontrado" };
 
-  return {
-    title: genre.label,
-    description: `Livros de ${genre.label.toLowerCase()} para descobrir no Estante.`,
-  };
+  return { title: genre.label, description: genre.blurb };
 }
 
 export default function GenrePage({ params }: PageProps<"/generos/[slug]">) {
   return (
     <Suspense fallback={<BookShelfSkeleton />}>
-      <GenreBooks params={params} />
+      <GenreContent params={params} />
     </Suspense>
   );
 }
 
-async function GenreBooks({ params }: Pick<PageProps<"/generos/[slug]">, "params">) {
+async function GenreContent({ params }: Pick<PageProps<"/generos/[slug]">, "params">) {
   const { slug } = await params;
   const genre = findGenre(slug);
   if (!genre) notFound();
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">{genre.label}</h1>
-      <BookShelf query={genre.query} limit={20} eager />
+    <div className="space-y-10">
+      <PageHeader eyebrow="Gênero" title={genre.label} description={genre.blurb} />
+
+      <Suspense fallback={<BookShelfSkeleton />}>
+        <BookShelf query={genre.query} limit={20} eager />
+      </Suspense>
+
+      <nav aria-labelledby="outros-generos" className="border-line space-y-3 border-t pt-8">
+        <h2
+          id="outros-generos"
+          className="text-muted text-sm font-medium tracking-widest uppercase"
+        >
+          Outros gêneros
+        </h2>
+        <GenreChips current={genre.slug} />
+      </nav>
     </div>
   );
 }

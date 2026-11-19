@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useFavorites, useHydrated } from "@/lib/use-favorites";
 import { BookGrid } from "./book-grid";
+import { StateMessage } from "./state-message";
 
 export function FavoritesList() {
   const hydrated = useHydrated();
@@ -21,12 +22,19 @@ export function FavoritesList() {
 
   if (favorites.length === 0) {
     return (
-      <div className="border-line space-y-3 rounded-md border border-dashed p-8 text-center">
-        <p className="text-muted">Você ainda não favoritou nenhum livro.</p>
-        <Link href="/" className="text-accent underline">
-          Explorar o catálogo
-        </Link>
-      </div>
+      <StateMessage
+        title="Sua estante está vazia"
+        action={
+          <Link
+            href="/"
+            className="bg-ink text-paper hover:bg-ink/80 inline-block rounded-full px-5 py-2 text-sm font-medium transition-colors"
+          >
+            Explorar o catálogo
+          </Link>
+        }
+      >
+        Clique no coração de qualquer livro para guardá-lo aqui.
+      </StateMessage>
     );
   }
 

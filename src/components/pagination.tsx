@@ -7,6 +7,11 @@ function hrefFor(query: string, page: number): string {
   return `/busca?${params.toString()}`;
 }
 
+const base =
+  "inline-flex min-w-10 items-center justify-center rounded-full border px-3 py-1.5 text-sm transition-colors";
+const idle = "border-line text-ink/80 hover:border-accent hover:text-accent";
+const current = "border-ink bg-ink text-paper";
+
 export function Pagination({
   query,
   page,
@@ -18,15 +23,12 @@ export function Pagination({
 }) {
   if (totalPages <= 1) return null;
 
-  const linkClass =
-    "rounded-md border border-line px-3 py-1.5 text-sm hover:bg-line/50 focus-visible:outline-2 focus-visible:outline-accent";
-
   return (
-    <nav aria-label="Paginação" className="mt-10">
+    <nav aria-label="Paginação" className="mt-12">
       <ul className="flex flex-wrap items-center justify-center gap-2">
         {page > 1 && (
           <li>
-            <Link href={hrefFor(query, page - 1)} rel="prev" className={linkClass}>
+            <Link href={hrefFor(query, page - 1)} rel="prev" className={`${base} ${idle}`}>
               Anterior
             </Link>
           </li>
@@ -41,7 +43,7 @@ export function Pagination({
               <Link
                 href={hrefFor(query, item)}
                 aria-current={item === page ? "page" : undefined}
-                className={`${linkClass} ${item === page ? "bg-ink text-paper hover:bg-ink" : ""}`}
+                className={`${base} ${item === page ? current : idle}`}
               >
                 {item}
               </Link>
@@ -50,7 +52,7 @@ export function Pagination({
         )}
         {page < totalPages && (
           <li>
-            <Link href={hrefFor(query, page + 1)} rel="next" className={linkClass}>
+            <Link href={hrefFor(query, page + 1)} rel="next" className={`${base} ${idle}`}>
               Próxima
             </Link>
           </li>

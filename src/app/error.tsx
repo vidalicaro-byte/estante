@@ -1,17 +1,29 @@
 "use client";
 
-export default function Error({ reset }: { error: Error; reset: () => void }) {
+import { StateMessage } from "@/components/state-message";
+
+export default function Error({
+  retry,
+}: {
+  error: Error & { digest?: string };
+  retry: () => void;
+}) {
   return (
-    <div role="alert" className="space-y-4">
-      <h1 className="text-2xl font-bold">Algo deu errado</h1>
-      <p className="text-muted">Não foi possível carregar esta página.</p>
-      <button
-        type="button"
-        onClick={reset}
-        className="bg-ink text-paper hover:bg-ink/80 rounded-md px-4 py-2 font-medium"
-      >
-        Tentar de novo
-      </button>
-    </div>
+    <StateMessage
+      tone="error"
+      title="Algo deu errado"
+      action={
+        <button
+          type="button"
+          onClick={() => retry()}
+          className="bg-ink text-paper hover:bg-ink/80 rounded-full px-5 py-2 text-sm font-medium transition-colors"
+        >
+          Tentar de novo
+        </button>
+      }
+    >
+      Não foi possível carregar esta página. Costuma ser uma instabilidade passageira da Open
+      Library.
+    </StateMessage>
   );
 }
