@@ -1,4 +1,5 @@
 import type { RawAuthor, RawWork, SearchDoc } from "./schemas";
+import { preferPortuguese, toParagraphs, toSections } from "./text";
 import type { Author, BookSummary, ExternalLink, Work } from "./types";
 
 /** "/works/OL1003040W" -> "OL1003040W" */
@@ -9,27 +10,6 @@ export function idFromKey(key: string): string {
 /** The API uses -1 as a placeholder for "no image". */
 function validIds(ids: number[] | undefined): number[] {
   return (ids ?? []).filter((id) => Number.isInteger(id) && id > 0);
-}
-
-function readText(value: string | { value: string } | undefined): string {
-  if (value === undefined) return "";
-  return typeof value === "string" ? value : value.value;
-}
-
-function stripMarkdown(text: string): string {
-  return text
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/(\*\*|__)/g, "")
-    .trim();
-}
-
-/** Splits free text into clean paragraphs, dropping "-----" separators. */
-export function toParagraphs(value: string | { value: string } | undefined): string[] {
-  return readText(value)
-    .replace(/\r\n?/g, "\n")
-    .split(/\n{2,}/)
-    .map(stripMarkdown)
-    .filter((paragraph) => paragraph !== "" && !/^[-=_*\s]{3,}$/.test(paragraph));
 }
 
 function isHttpUrl(value: string): boolean {
@@ -84,7 +64,7 @@ export function toAuthor(raw: RawAuthor): Author {
     name: raw.name,
     birthDate: raw.birth_date,
     deathDate: raw.death_date,
-    bio: toParagraphs(raw.bio),
+    bio: preferPortuguese(toSections(raw.bio)),
     photoIds: validIds(raw.photos),
     links: safeLinks(raw.links),
   };

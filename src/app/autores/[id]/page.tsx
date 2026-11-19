@@ -5,8 +5,15 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BookShelf, BookShelfSkeleton } from "@/components/book-shelf";
 import { getBookAuthor, getFeaturedAuthorIds } from "@/lib/catalog";
-import { authorPhotoUrl } from "@/lib/open-library";
+import { authorPhotoUrl, type TextSection } from "@/lib/open-library";
 import { truncate } from "@/lib/text";
+
+const LANGUAGE_NAME = { pt: "português", en: "inglês", other: "outro idioma" } as const;
+
+/** The lang attribute lets screen readers pronounce each block correctly. */
+function langOf(section: TextSection): string | undefined {
+  return section.language === "other" ? undefined : section.language;
+}
 
 export async function generateStaticParams() {
   const ids = await getFeaturedAuthorIds();
@@ -18,11 +25,11 @@ export async function generateMetadata({ params }: PageProps<"/autores/[id]">): 
   const author = await getBookAuthor(id);
   if (!author) return { title: "Autor não encontrado" };
 
+  const intro = author.bio[0]?.paragraphs[0];
+
   return {
     title: author.name,
-    description: author.bio[0]
-      ? truncate(author.bio[0], 160)
-      : `Livros e informações sobre ${author.name}.`,
+    description: intro ? truncate(intro, 160) : `Livros e informações sobre ${author.name}.`,
   };
 }
 
@@ -41,6 +48,7 @@ async function AuthorDetails({ params }: Pick<PageProps<"/autores/[id]">, "param
 
   const photo = author.photoIds[0];
   const years = [author.birthDate, author.deathDate].filter(Boolean).join(" – ");
+  const [mainBio, ...otherBios] = author.bio;
 
   return (
     <article className="space-y-14">
@@ -74,13 +82,32 @@ async function AuthorDetails({ params }: Pick<PageProps<"/autores/[id]">, "param
             {years && <p className="text-muted">{years}</p>}
           </header>
 
-          {author.bio.length > 0 && (
-            <div className="text-ink/90 max-w-prose space-y-4 text-lg leading-relaxed">
-              {author.bio.map((paragraph, index) => (
+          {mainBio && (
+            <div
+              lang={langOf(mainBio)}
+              className="text-ink/90 max-w-prose space-y-4 text-lg leading-relaxed"
+            >
+              {mainBio.paragraphs.map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}
             </div>
           )}
+
+          {otherBios.map((section, index) => (
+            <details key={index} className="max-w-prose">
+              <summary className="text-accent cursor-pointer text-sm hover:underline">
+                Ler também em {LANGUAGE_NAME[section.language]}
+              </summary>
+              <div
+                lang={langOf(section)}
+                className="text-ink/90 mt-4 space-y-4 text-lg leading-relaxed"
+              >
+                {section.paragraphs.map((paragraph, paragraphIndex) => (
+                  <p key={paragraphIndex}>{paragraph}</p>
+                ))}
+              </div>
+            </details>
+          ))}
 
           {author.links.length > 0 && (
             <ul className="flex flex-wrap gap-x-5 gap-y-1.5">

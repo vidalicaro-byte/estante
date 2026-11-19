@@ -114,9 +114,10 @@ describe("getAuthor", () => {
       deathDate: "29 September 1908",
       photoIds: [8569287],
     });
+    // Portuguese first (the site is in pt-BR); the English translation stays available.
     expect(author.bio).toEqual([
-      "Machado de Assis was a pioneer Brazilian novelist.",
-      "Machado de Assis foi um escritor brasileiro.",
+      { language: "pt", paragraphs: ["Machado de Assis foi um escritor brasileiro."] },
+      { language: "en", paragraphs: ["Machado de Assis was a pioneer Brazilian novelist."] },
     ]);
   });
 
