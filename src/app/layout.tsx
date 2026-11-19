@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   title: { default: "Estante", template: "%s · Estante" },
   description: "Catálogo de livros com destaque para a literatura brasileira.",
   openGraph: { siteName: "Estante", locale: "pt_BR", type: "website" },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

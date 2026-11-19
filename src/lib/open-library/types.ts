@@ -40,13 +40,22 @@ export interface Work {
   links: ExternalLink[];
 }
 
+export type TextLanguage = "pt" | "en" | "other";
+
+/** A block of text in one language. Open Library often stores translations back to back. */
+export interface TextSection {
+  language: TextLanguage;
+  paragraphs: string[];
+}
+
 export interface Author {
   id: string;
   name: string;
   birthDate?: string;
   deathDate?: string;
-  /** Plain-text paragraphs. Empty when the author has no bio. */
-  bio: string[];
+
+  /** Sections in display order: Portuguese first when present. Empty when there is no bio. */
+  bio: TextSection[];
   photoIds: number[];
   links: ExternalLink[];
 }
