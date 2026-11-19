@@ -43,9 +43,9 @@ async function AuthorDetails({ params }: Pick<PageProps<"/autores/[id]">, "param
   const years = [author.birthDate, author.deathDate].filter(Boolean).join(" – ");
 
   return (
-    <article className="space-y-10">
-      <div className="flex flex-col gap-8 sm:flex-row">
-        <div className="bg-line relative aspect-square w-40 shrink-0 self-start overflow-hidden rounded-md shadow-md">
+    <article className="space-y-14">
+      <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
+        <div className="bg-line ring-ink/10 relative size-40 shrink-0 overflow-hidden rounded-full shadow-lg ring-1">
           {photo !== undefined ? (
             <Image
               src={authorPhotoUrl(photo, "L")}
@@ -56,20 +56,26 @@ async function AuthorDetails({ params }: Pick<PageProps<"/autores/[id]">, "param
               className="object-cover object-top"
             />
           ) : (
-            <div aria-hidden className="text-muted flex h-full items-center justify-center text-sm">
-              Sem foto
+            <div
+              aria-hidden
+              className="font-display text-muted flex h-full items-center justify-center text-5xl"
+            >
+              {author.name.charAt(0)}
             </div>
           )}
         </div>
 
-        <div className="min-w-0 space-y-4">
-          <header className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">{author.name}</h1>
+        <div className="min-w-0 space-y-5">
+          <header className="space-y-2">
+            <p className="text-accent text-sm font-medium tracking-widest uppercase">Autor</p>
+            <h1 className="font-display text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+              {author.name}
+            </h1>
             {years && <p className="text-muted">{years}</p>}
           </header>
 
           {author.bio.length > 0 && (
-            <div className="text-ink/80 max-w-prose space-y-3">
+            <div className="text-ink/90 max-w-prose space-y-4 text-lg leading-relaxed">
               {author.bio.map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}
@@ -77,16 +83,17 @@ async function AuthorDetails({ params }: Pick<PageProps<"/autores/[id]">, "param
           )}
 
           {author.links.length > 0 && (
-            <ul className="flex flex-wrap gap-x-4 gap-y-1">
+            <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
               {author.links.map((link) => (
                 <li key={link.url}>
                   <a
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-accent underline"
+                    className="text-accent decoration-accent/40 hover:decoration-accent underline underline-offset-4"
                   >
                     {link.title}
+                    <span aria-hidden> ↗</span>
                     <span className="sr-only"> (abre em nova aba)</span>
                   </a>
                 </li>
@@ -96,19 +103,21 @@ async function AuthorDetails({ params }: Pick<PageProps<"/autores/[id]">, "param
         </div>
       </div>
 
-      <section aria-labelledby="obras" className="space-y-4">
-        <h2 id="obras" className="text-xl font-semibold">
-          Obras
-        </h2>
+      <section aria-labelledby="obras" className="border-line space-y-6 border-t pt-10">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 id="obras" className="font-display text-2xl font-semibold tracking-tight">
+            Obras
+          </h2>
+          <Link
+            href={`/busca?q=${encodeURIComponent(`author_key:${author.id}`)}`}
+            className="text-accent shrink-0 text-sm hover:underline"
+          >
+            Ver todas →
+          </Link>
+        </div>
         <Suspense fallback={<BookShelfSkeleton />}>
           <BookShelf query={`author_key:${author.id}`} limit={20} />
         </Suspense>
-        <Link
-          href={`/busca?q=${encodeURIComponent(`author_key:${author.id}`)}`}
-          className="text-accent inline-block text-sm underline"
-        >
-          Ver todas as obras na busca
-        </Link>
       </section>
     </article>
   );
@@ -117,10 +126,10 @@ async function AuthorDetails({ params }: Pick<PageProps<"/autores/[id]">, "param
 function AuthorSkeleton() {
   return (
     <div aria-hidden className="flex flex-col gap-8 sm:flex-row">
-      <div className="bg-line aspect-square w-40 animate-pulse rounded-md" />
+      <div className="bg-line size-40 animate-pulse rounded-full" />
       <div className="flex-1 space-y-4">
-        <div className="bg-line h-9 w-1/2 animate-pulse rounded" />
-        <div className="bg-line h-24 w-full max-w-prose animate-pulse rounded" />
+        <div className="bg-line h-12 w-1/2 animate-pulse rounded" />
+        <div className="bg-line h-32 w-full max-w-prose animate-pulse rounded" />
       </div>
     </div>
   );

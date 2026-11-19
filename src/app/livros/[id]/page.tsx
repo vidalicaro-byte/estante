@@ -3,13 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { FavoriteButton } from "@/components/favorite-button";
 import { JsonLd } from "@/components/json-ld";
 import { bookJsonLd } from "@/lib/book-json-ld";
+import type { CardBook } from "@/lib/card-book";
 import { getBookWork, getFeaturedWorkIds, loadAuthors } from "@/lib/catalog";
 import { coverUrl, type Work } from "@/lib/open-library";
 import { truncate } from "@/lib/text";
-import { FavoriteButton } from "@/components/favorite-button";
-import type { CardBook } from "@/lib/card-book";
 
 export async function generateStaticParams() {
   const ids = await getFeaturedWorkIds();
@@ -46,16 +46,18 @@ export default function BookPage({ params }: PageProps<"/livros/[id]">) {
   );
 }
 
+const sectionTitle = "text-sm font-medium tracking-widest text-muted uppercase";
+
 async function AuthorLine({ authorIds }: { authorIds: string[] }) {
   const authors = await loadAuthors(authorIds);
   if (authors.length === 0) return null;
 
   return (
-    <p className="text-muted text-lg">
+    <p className="font-display text-muted text-xl">
       {authors.map((author, index) => (
         <span key={author.id}>
           {index > 0 && ", "}
-          <Link href={`/autores/${author.id}`} className="hover:text-ink hover:underline">
+          <Link href={`/autores/${author.id}`} className="hover:text-accent hover:underline">
             {author.name}
           </Link>
         </span>
@@ -89,110 +91,122 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
   const cover = work.coverIds[0];
 
   return (
-    <article className="space-y-8">
+    <>
       <Suspense fallback={null}>
         <BookStructuredData work={work} />
       </Suspense>
 
-      <Link href="/busca" className="text-muted hover:text-ink text-sm hover:underline">
-        ← Voltar à busca
-      </Link>
+      <article className="space-y-8">
+        <Link href="/" className="text-muted hover:text-ink text-sm hover:underline">
+          ← Catálogo
+        </Link>
 
-      <div className="flex flex-col gap-8 sm:flex-row">
-        <div className="bg-line relative aspect-[2/3] w-48 shrink-0 self-start overflow-hidden rounded-md shadow-md sm:w-64">
-          {cover !== undefined ? (
-            <Image
-              src={coverUrl(cover, "L")}
-              alt={`Capa de ${work.title}`}
-              fill
-              sizes="(min-width: 640px) 256px, 192px"
-              loading="eager"
-              className="object-cover"
-            />
-          ) : (
-            <div aria-hidden className="text-muted flex h-full items-center justify-center text-sm">
-              Sem capa
-            </div>
-          )}
-        </div>
+        <div className="grid gap-10 md:grid-cols-[16rem_1fr] md:gap-14">
+          <div className="bg-line ring-ink/10 relative mx-auto aspect-[2/3] w-52 self-start overflow-hidden rounded-sm shadow-xl ring-1 md:sticky md:top-24 md:w-full">
+            {cover !== undefined ? (
+              <Image
+                src={coverUrl(cover, "L")}
+                alt={`Capa de ${work.title}`}
+                fill
+                sizes="(min-width: 768px) 256px, 208px"
+                loading="eager"
+                className="object-cover"
+              />
+            ) : (
+              <div aria-hidden className="bg-surface flex h-full flex-col justify-between p-5">
+                <span className="font-display text-2xl leading-tight font-semibold">
+                  {work.title}
+                </span>
+              </div>
+            )}
+          </div>
 
-        <div className="min-w-0 space-y-6">
-          <header className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">{work.title}</h1>
+          <div className="min-w-0 space-y-8">
+            <header className="space-y-2">
+              <h1 className="font-display text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+                {work.title}
+              </h1>
+              <Suspense
+                fallback={<div aria-hidden className="bg-line h-7 w-48 animate-pulse rounded" />}
+              >
+                <AuthorLine authorIds={work.authorIds} />
+              </Suspense>
+            </header>
+
             <Suspense
-              fallback={<div aria-hidden className="bg-line h-7 w-40 animate-pulse rounded" />}
+              fallback={<div aria-hidden className="bg-line h-10 w-32 animate-pulse rounded-md" />}
             >
-              <AuthorLine authorIds={work.authorIds} />
+              <FavoriteAction work={work} />
             </Suspense>
-          </header>
 
-          <Suspense
-            fallback={<div aria-hidden className="bg-line h-10 w-32 animate-pulse rounded-md" />}
-          >
-            <FavoriteAction work={work} />
-          </Suspense>
-
-          {work.description.length > 0 ? (
-            <div className="text-ink/80 max-w-prose space-y-3">
-              {work.description.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted">Este livro ainda não tem descrição.</p>
-          )}
-
-          {work.subjects.length > 0 && (
-            <section aria-labelledby="assuntos" className="space-y-2">
-              <h2 id="assuntos" className="text-muted text-sm font-semibold uppercase">
-                Assuntos
-              </h2>
-              <ul className="flex flex-wrap gap-2">
-                {work.subjects.slice(0, 10).map((subject) => (
-                  <li key={subject} className="bg-line text-ink/80 rounded-full px-3 py-1 text-sm">
-                    {subject}
-                  </li>
+            {work.description.length > 0 ? (
+              <div className="text-ink/90 max-w-prose space-y-4 text-lg leading-relaxed">
+                {work.description.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
                 ))}
-              </ul>
-            </section>
-          )}
+              </div>
+            ) : (
+              <p className="text-muted">Este livro ainda não tem descrição.</p>
+            )}
 
-          {work.links.length > 0 && (
-            <section aria-labelledby="links" className="space-y-2">
-              <h2 id="links" className="text-muted text-sm font-semibold uppercase">
-                Links externos
-              </h2>
-              <ul className="space-y-1">
-                {work.links.map((link) => (
-                  <li key={link.url}>
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-accent underline"
-                    >
-                      {link.title}
-                      <span className="sr-only"> (abre em nova aba)</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+            {work.subjects.length > 0 && (
+              <section aria-labelledby="assuntos" className="space-y-3">
+                <h2 id="assuntos" className={sectionTitle}>
+                  Assuntos
+                </h2>
+                <ul className="flex flex-wrap gap-2">
+                  {work.subjects.slice(0, 8).map((subject) => (
+                    <li key={subject}>
+                      <Link
+                        href={`/busca?q=${encodeURIComponent(`subject:"${subject.replace(/"/g, "")}"`)}`}
+                        className="bg-line/60 text-ink/80 hover:bg-accent hover:text-paper inline-block rounded-full px-3 py-1 text-sm transition-colors"
+                      >
+                        {subject}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {work.links.length > 0 && (
+              <section aria-labelledby="links" className="space-y-3">
+                <h2 id="links" className={sectionTitle}>
+                  Links externos
+                </h2>
+                <ul className="space-y-1.5">
+                  {work.links.map((link) => (
+                    <li key={link.url}>
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-accent decoration-accent/40 hover:decoration-accent underline underline-offset-4"
+                      >
+                        {link.title}
+                        <span aria-hidden> ↗</span>
+                        <span className="sr-only"> (abre em nova aba)</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </>
   );
 }
 
 function BookSkeleton() {
   return (
-    <div aria-hidden className="flex flex-col gap-8 sm:flex-row">
-      <div className="bg-line aspect-[2/3] w-48 animate-pulse rounded-md sm:w-64" />
-      <div className="flex-1 space-y-4">
-        <div className="bg-line h-9 w-2/3 animate-pulse rounded" />
-        <div className="bg-line h-5 w-1/3 animate-pulse rounded" />
-        <div className="bg-line h-24 w-full max-w-prose animate-pulse rounded" />
+    <div aria-hidden className="grid gap-10 md:grid-cols-[16rem_1fr] md:gap-14">
+      <div className="bg-line mx-auto aspect-[2/3] w-52 animate-pulse rounded-sm md:w-full" />
+      <div className="space-y-4">
+        <div className="bg-line h-12 w-2/3 animate-pulse rounded" />
+        <div className="bg-line h-6 w-1/3 animate-pulse rounded" />
+        <div className="bg-line h-32 w-full max-w-prose animate-pulse rounded" />
       </div>
     </div>
   );
