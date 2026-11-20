@@ -17,6 +17,17 @@ const DEFAULT_RETRY_DELAY_MS = 300;
 const IS_BUILD = process.env.NEXT_PHASE === "phase-production-build";
 const MAX_RETRIES = IS_BUILD ? 5 : 2;
 
+/**
+ * Open Library asks identified clients to stay around 3 requests per second and answers
+ * 429 beyond that (handled with Retry-After below). The build runs in several worker
+ * processes, each with its own limiter, so a queue longer than Next's time limit for a
+ * cached function breaks the build: keep the interval short enough for the queue to fit.
+ * Tests run without throttling.
+ */
+const MIN_INTERVAL_MS = process.env.VITEST ? 0 : IS_BUILD ? 400 : 350;
+const MAX_RETRY_AFTER_MS = 30_000;
+let nextSlot = 0;
+
 export type SearchParams = Record<string, string | number | undefined>;
 
 export interface RequestOptions {
@@ -37,6 +48,23 @@ function buildUrl(path: string, searchParams?: SearchParams): URL {
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Waits for this process's next free request slot. */
+async function throttle(): Promise<void> {
+  if (MIN_INTERVAL_MS === 0) return;
+  const now = Date.now();
+  const start = Math.max(now, nextSlot);
+  nextSlot = start + MIN_INTERVAL_MS;
+  if (start > now) await sleep(start - now);
+}
+
+/** Retry-After as seconds. HTTP dates are rare here and are ignored. */
+function parseRetryAfter(header: string | null): number | undefined {
+  if (header === null) return undefined;
+  const seconds = Number(header);
+  if (!Number.isFinite(seconds) || seconds < 0) return undefined;
+  return Math.min(seconds * 1000, MAX_RETRY_AFTER_MS);
 }
 
 async function requestOnce<T>(
@@ -62,7 +90,10 @@ async function requestOnce<T>(
   }
 
   if (response.status === 404) throw new NotFoundError(href);
-  if (!response.ok) throw new HttpError(response.status, href);
+  if (!response.ok) {
+    const retryAfterMs = parseRetryAfter(response.headers.get("Retry-After"));
+    throw new HttpError(response.status, href, retryAfterMs);
+  }
 
   let json: unknown;
   try {
@@ -92,6 +123,7 @@ export async function fetchJson<T>(
 
   for (let attempt = 0; ; attempt++) {
     try {
+      await throttle();
       return await requestOnce(url, schema, timeoutMs, signal);
     } catch (error) {
       const canRetry =
@@ -100,7 +132,12 @@ export async function fetchJson<T>(
         attempt < MAX_RETRIES &&
         !signal?.aborted;
       if (!canRetry) throw error;
-      await sleep(retryDelayMs * 2 ** attempt);
+      // A 429 means we are going too fast: wait much longer, or as long as the server asks.
+      const delay =
+        error instanceof HttpError && error.status === 429
+          ? Math.max(error.retryAfterMs ?? 0, retryDelayMs * 8 * (attempt + 1))
+          : retryDelayMs * 2 ** attempt;
+      await sleep(delay);
     }
   }
 }

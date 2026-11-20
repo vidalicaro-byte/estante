@@ -34,6 +34,8 @@ export class HttpError extends OpenLibraryError {
   constructor(
     readonly status: number,
     readonly url: string,
+    /** Delay requested by the server through the Retry-After header, when present. */
+    readonly retryAfterMs?: number,
   ) {
     super(`Request to ${url} failed with status ${status}`);
   }

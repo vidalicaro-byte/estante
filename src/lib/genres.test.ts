@@ -12,4 +12,14 @@ describe("GENRES", () => {
     expect(findGenre("fantasia")?.label).toBe("Fantasia");
     expect(findGenre("nao-existe")).toBeUndefined();
   });
+
+  it("keeps curated shelves valid and unique", () => {
+    const classics = findGenre("classicos");
+    expect(classics?.shelves?.length).toBeGreaterThan(0);
+
+    const shelves = classics?.shelves ?? [];
+    for (const shelf of shelves) expect(shelf.query).toMatch(/^author_key:OL\d+A$/);
+    expect(new Set(shelves.map((shelf) => shelf.query)).size).toBe(shelves.length);
+    expect(new Set(shelves.map((shelf) => shelf.title)).size).toBe(shelves.length);
+  });
 });
