@@ -10,6 +10,7 @@ import type { CardBook } from "@/lib/card-book";
 import { getBookWork, getFeaturedWorkIds, loadAuthors } from "@/lib/catalog";
 import { coverUrl, type Work } from "@/lib/open-library";
 import { truncate } from "@/lib/text";
+import { ShareButton } from "@/components/share-button";
 
 export async function generateStaticParams() {
   const ids = await getFeaturedWorkIds();
@@ -133,11 +134,16 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
               </Suspense>
             </header>
 
-            <Suspense
-              fallback={<div aria-hidden className="bg-line h-10 w-32 animate-pulse rounded-md" />}
-            >
-              <FavoriteAction work={work} />
-            </Suspense>
+            <div className="flex flex-wrap items-center gap-3">
+              <Suspense
+                fallback={
+                  <div aria-hidden className="bg-line h-10 w-32 animate-pulse rounded-md" />
+                }
+              >
+                <FavoriteAction work={work} />
+              </Suspense>
+              <ShareButton title={work.title} />
+            </div>
 
             {work.description.length > 0 ? (
               <div className="text-ink/90 max-w-prose space-y-4 text-lg leading-relaxed">
