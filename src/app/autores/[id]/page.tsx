@@ -27,9 +27,9 @@ export async function generateMetadata({ params }: PageProps<"/autores/[id]">): 
   if (!author) return { title: "Autor não encontrado" };
 
   const intro = author.bio[0]?.paragraphs[0];
-
   const description = intro ? truncate(intro, 160) : `Livros e informações sobre ${author.name}.`;
-  const photo = author.photo ? authorPhotoUrl(author.photo, "L") : undefined;
+  const photoId = author.photoIds[0];
+  const photo = photoId !== undefined ? authorPhotoUrl(photoId, "L") : undefined;
 
   return {
     title: author.name,
