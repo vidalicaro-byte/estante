@@ -7,6 +7,7 @@ import { BookShelf, BookShelfSkeleton } from "@/components/book-shelf";
 import { getBookAuthor, getFeaturedAuthorIds } from "@/lib/catalog";
 import { authorPhotoUrl, type TextSection } from "@/lib/open-library";
 import { truncate } from "@/lib/text";
+import { ShareButton } from "@/components/share-button";
 
 const LANGUAGE_NAME = { pt: "português", en: "inglês", other: "outro idioma" } as const;
 
@@ -26,10 +27,21 @@ export async function generateMetadata({ params }: PageProps<"/autores/[id]">): 
   if (!author) return { title: "Autor não encontrado" };
 
   const intro = author.bio[0]?.paragraphs[0];
+  const description = intro ? truncate(intro, 160) : `Livros e informações sobre ${author.name}.`;
+  const photoId = author.photoIds[0];
+  const photo = photoId !== undefined ? authorPhotoUrl(photoId, "L") : undefined;
 
   return {
     title: author.name,
-    description: intro ? truncate(intro, 160) : `Livros e informações sobre ${author.name}.`,
+    description,
+    openGraph: {
+      type: "profile",
+      siteName: "Estante",
+      locale: "pt_BR",
+      title: author.name,
+      description,
+      ...(photo && { images: [photo] }),
+    },
   };
 }
 
@@ -81,6 +93,7 @@ async function AuthorDetails({ params }: Pick<PageProps<"/autores/[id]">, "param
             </h1>
             {years && <p className="text-muted">{years}</p>}
           </header>
+          <ShareButton title={author.name} />
 
           {mainBio && (
             <div
