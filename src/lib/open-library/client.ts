@@ -18,11 +18,13 @@ const IS_BUILD = process.env.NEXT_PHASE === "phase-production-build";
 const MAX_RETRIES = IS_BUILD ? 5 : 2;
 
 /**
- * Open Library allows about 3 requests per second to identified clients and answers 429
- * beyond that. The build runs in several worker processes, each with its own limiter, so
- * it spaces requests wider. Tests run without throttling.
+ * Open Library asks identified clients to stay around 3 requests per second and answers
+ * 429 beyond that (handled with Retry-After below). The build runs in several worker
+ * processes, each with its own limiter, so a queue longer than Next's time limit for a
+ * cached function breaks the build: keep the interval short enough for the queue to fit.
+ * Tests run without throttling.
  */
-const MIN_INTERVAL_MS = process.env.VITEST ? 0 : IS_BUILD ? 1_000 : 350;
+const MIN_INTERVAL_MS = process.env.VITEST ? 0 : IS_BUILD ? 400 : 350;
 const MAX_RETRY_AFTER_MS = 30_000;
 let nextSlot = 0;
 
