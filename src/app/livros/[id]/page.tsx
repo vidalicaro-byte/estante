@@ -97,7 +97,7 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
       </Suspense>
 
       <article className="space-y-8">
-        <Link href="/" className="text-muted hover:text-ink text-sm hover:underline">
+        <Link href="/" className="text-muted hover:text-ink inline-block text-sm hover:underline">
           ← Catálogo
         </Link>
 
