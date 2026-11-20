@@ -4,6 +4,10 @@ import { SHELVES } from "./shelves";
 const KNOWN_QUERIES = [
   ...SHELVES.map((shelf) => ({ query: shelf.query, label: shelf.title })),
   ...GENRES.map((genre) => ({ query: genre.query, label: genre.label })),
+  ...GENRES.flatMap((genre) => genre.shelves ?? []).map((shelf) => ({
+    query: shelf.query,
+    label: shelf.title,
+  })),
 ];
 
 /** Turns internal search syntax (author:"X", subject:"Y") into a readable title. */

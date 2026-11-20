@@ -1,3 +1,26 @@
+import type { Shelf } from "./shelves";
+
+const authorShelf = (title: string, key: string): Shelf => ({
+  title,
+  query: `author_key:${key}`,
+});
+
+/** Curated by author: subject searches for "classics" return unrelated books. */
+export const CLASSIC_SHELVES: Shelf[] = [
+  authorShelf("Homero", "OL5988788A"),
+  authorShelf("Dante Alighieri", "OL29303A"),
+  authorShelf("Miguel de Cervantes", "OL66452A"),
+  authorShelf("William Shakespeare", "OL9388A"),
+  authorShelf("Jane Austen", "OL21594A"),
+  authorShelf("Charles Dickens", "OL24638A"),
+  authorShelf("Victor Hugo", "OL107571A"),
+  authorShelf("Gustave Flaubert", "OL79039A"),
+  authorShelf("Fiódor Dostoiévski", "OL22242A"),
+  authorShelf("Liev Tolstói", "OL26783A"),
+  authorShelf("Franz Kafka", "OL33146A"),
+  authorShelf("Eça de Queirós", "OL73090A"),
+];
+
 export interface Genre {
   slug: string;
   label: string;
@@ -5,6 +28,8 @@ export interface Genre {
   blurb: string;
   /** Open Library search query. */
   query: string;
+  /** When present, the genre page shows one shelf per entry instead of a single list. */
+  shelves?: Shelf[];
 }
 
 export const GENRES: Genre[] = [
@@ -14,6 +39,14 @@ export const GENRES: Genre[] = [
     blurb:
       "Romances, contos e crônicas que contam o Brasil, dos clássicos do século XIX à produção contemporânea.",
     query: 'subject:"brazilian literature"',
+  },
+  {
+    slug: "classicos",
+    label: "Clássicos",
+    blurb:
+      "Os livros que atravessaram séculos: da épica de Homero aos grandes romances do século XIX.",
+    query: `author_key:(${CLASSIC_SHELVES.map((shelf) => shelf.query.replace("author_key:", "")).join(" OR ")})`,
+    shelves: CLASSIC_SHELVES,
   },
   {
     slug: "ficcao-cientifica",
