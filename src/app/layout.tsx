@@ -7,9 +7,17 @@ import "./globals.css";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
-  style: ["normal", "italic"],
   axes: ["opsz"],
   variable: "--font-fraunces",
+});
+
+// Only the home headline uses the italic, so it must not be preloaded on every page.
+const frauncesItalic = Fraunces({
+  subsets: ["latin"],
+  style: "italic",
+  axes: ["opsz"],
+  preload: false,
+  variable: "--font-fraunces-italic",
 });
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -37,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${fraunces.variable} ${inter.variable}`}
+      className={`${fraunces.variable} ${frauncesItalic.variable} ${inter.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

@@ -13,7 +13,8 @@ export default function HomePage() {
           Catálogo de livros
         </p>
         <h1 className="font-display max-w-3xl text-5xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-6xl">
-          Encontre o próximo livro de que você vai <em className="text-accent">se lembrar</em>.
+          Encontre o próximo livro de que você vai{" "}
+          <em className="font-display-italic text-accent">se lembrar</em>.
         </h1>
         <p className="text-muted max-w-xl text-lg">
           Busque entre milhões de títulos ou comece pela literatura brasileira.

@@ -32,18 +32,18 @@
   --color-accent: var(--accent);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-display-italic: var(--font-fraunces-italic), ui-serif, Georgia, serif;
 }
 
 @theme {
-  --animate-fade-up: fade-up 0.6s ease-out both;
+  --animate-fade-up: fade-up 0.4s ease-out both;
 
   @keyframes fade-up {
+    /* No opacity: text hidden at opacity 0 is not painted, which delays LCP. */
     from {
-      opacity: 0;
       transform: translateY(8px);
     }
     to {
-      opacity: 1;
       transform: none;
     }
   }

@@ -110,7 +110,7 @@ async function BookDetails({ params }: Pick<PageProps<"/livros/[id]">, "params">
                 alt={`Capa de ${work.title}`}
                 fill
                 sizes="(min-width: 768px) 256px, 208px"
-                loading="eager"
+                preload
                 className="object-cover"
               />
             ) : (
